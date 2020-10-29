@@ -1,0 +1,35 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: enc-api
+  labels:
+    name: enc-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: enc-api
+  template:
+    metadata:
+      labels:
+        app: enc-api
+    spec:
+      containers:
+      - name: enc-api
+        image: enc-api:latest
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: enc-api-svc
+  labels:
+    service: enc-api-svc
+spec:
+  selector:
+    app: enc-api
+  ports:
+  - port: 80
+    targetPort: 5000
+  type: LoadBalancer

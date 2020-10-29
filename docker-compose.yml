@@ -1,0 +1,38 @@
+---
+version: '2.4'
+services:
+  reverse_proxy:
+    image: nginx:alpine
+    container_name: frontend-server
+    volumes:
+      - ./custom-flask.conf:/etc/nginx/conf.d/custom-flask.conf
+    depends_on:
+      - enc-api
+    networks:
+      enc-nw:
+        aliases:
+          - frontend-server
+    ports:
+      - 80:80
+    restart: on-failure
+  enc-api:
+    build:
+      dockerfile: Dockerfile
+      context: ./
+    image: enc-api:latest
+    container_name: enc-api
+    environment:
+      - FLASK_ENV=development
+    networks:
+      enc-nw:
+        aliases:
+          - enc-api
+
+networks:
+  enc-nw:
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.10.0/28
+          gateway: 192.168.10.1
+
